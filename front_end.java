@@ -1,7 +1,7 @@
 import java.io.*;
-import java.util.LinkedList;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.List;
 import javax.swing.*;
@@ -480,9 +480,10 @@ public class front_end extends JFrame implements ActionListener {
                                         
                                         model.addElement("--- " + deletedFiles.size() + " duplicate files removed ---");
                                         
-                                        // Show completion message
+                                        // Show completion message with JSON file information
                                         JOptionPane.showMessageDialog(front_end.this, 
-                                            "Successfully deleted " + deletedFiles.size() + " duplicate files.", 
+                                            "Successfully deleted " + deletedFiles.size() + " duplicate files.\n" +
+                                            "Deletion history has been saved to 'deletion_history.json'", 
                                             "Complete", JOptionPane.INFORMATION_MESSAGE);
                                         
                                     } catch (Exception ex) {
