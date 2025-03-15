@@ -222,6 +222,45 @@ public class front_end extends JFrame implements ActionListener {
         l1.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         l1.setBackground(Color.WHITE);
         
+        // Add custom cell renderer to colorize list items
+        l1.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, 
+                    int index, boolean isSelected, boolean cellHasFocus) {
+                
+                Component c = super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+                
+                String text = value.toString();
+                
+                if (isSelected) {
+                    // Keep default selection colors
+                    return c;
+                }
+                
+                // Set colors based on content
+                if (text.startsWith("---")) {
+                    // Headers and summary lines
+                    setForeground(new Color(0, 102, 204));  // Blue color
+                    setFont(new Font("Segoe UI", Font.BOLD, 13));
+                } else if (text.equals("No duplicate files found!")) {
+                    // No duplicates message
+                    setForeground(new Color(128, 128, 128));  // Gray color
+                    setFont(new Font("Segoe UI", Font.ITALIC, 13));
+                } else if (text.contains("=>")) {
+                    // File deletion entries (containing =>)
+                    setForeground(new Color(46, 125, 50));  // Green color
+                    setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                } else {
+                    // Default for other entries
+                    setForeground(new Color(0, 0, 0));  // Black color
+                    setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                }
+                
+                return c;
+            }
+        });
+        
         JScrollPane scrollPane = new JScrollPane(l1);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
         
@@ -292,34 +331,65 @@ public class front_end extends JFrame implements ActionListener {
             progressDialog.setLocationRelativeTo(this);
             
             // Use SwingWorker to run the process in background
-            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            SwingWorker<LinkedList<String>, Void> worker = new SwingWorker<LinkedList<String>, Void>() {
                 @Override
-                protected Void doInBackground() throws Exception {
+                protected LinkedList<String> doInBackground() throws Exception {
                     try {
-                        model.clear(); // Clear previous results
                         Delete_Duplicate dobj = new Delete_Duplicate();
                         dobj.list(f.getAbsolutePath());
-                        LinkedList<String> ll = dobj.getLlist();
-                        
-                        for (String item : ll) {
-                            model.addElement(item);
-                        }
-                        
-                        if (ll.isEmpty()) {
-                            model.addElement("No duplicate files found!");
-                        } else {
-                            model.addElement("All duplicate files have been removed!");
-                        }
+                        return dobj.getLlist();
                     } catch (Exception ex) {
                         ex.printStackTrace();
+                        return new LinkedList<>();
                     }
-                    return null;
                 }
                 
                 @Override
                 protected void done() {
-                    progressDialog.dispose();
-                    JOptionPane.showMessageDialog(front_end.this, "Task completed successfully!", "Complete", JOptionPane.INFORMATION_MESSAGE);
+                    try {
+                        // Get the results from the background task
+                        LinkedList<String> ll = get();
+                        
+                        // Clear and update the model
+                        model.clear();
+                        
+                        if (ll.isEmpty()) {
+                            model.addElement("No duplicate files found!");
+                        } else {
+                            // Add a header line
+                            model.addElement("--- Deleted Duplicate Files ---");
+                            
+                            // Add each deleted file to the list
+                            for (String item : ll) {
+                                model.addElement(item);
+                            }
+                            
+                            // Add a summary line
+                            model.addElement("--- " + ll.size() + " duplicate files removed ---");
+                        }
+                        
+                        // Make sure the list scrolls to the top
+                        if (model.size() > 0) {
+                            l1.setSelectedIndex(0);
+                            l1.ensureIndexIsVisible(0);
+                        }
+                        
+                        // Close the progress dialog
+                        progressDialog.dispose();
+                        
+                        // Show completion message
+                        JOptionPane.showMessageDialog(front_end.this, 
+                            "Scan completed successfully!\n" + 
+                            (ll.isEmpty() ? "No duplicate files found." : ll.size() + " duplicate files removed."), 
+                            "Complete", JOptionPane.INFORMATION_MESSAGE);
+                        
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        progressDialog.dispose();
+                        JOptionPane.showMessageDialog(front_end.this, 
+                            "An error occurred: " + ex.getMessage(), 
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             };
             
