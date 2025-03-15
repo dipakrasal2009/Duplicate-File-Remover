@@ -1,0 +1,9 @@
+#[Desktop Entry]
+#Version=1.0
+#Name=Duplicate File Remover
+#Comment=Remove duplicate files from your system
+#Exec=java -jar /home/hppc/Desktop/github/College/Projects/Duplicate_file_Remover/DuplicateRemover.jar
+#Icon=/home/hppc/Desktop/github/College/Projects/Duplicate_file_Remover/icon.png
+#Terminal=false
+#Type=Application
+#Categories=Utility;

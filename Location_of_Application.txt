@@ -1,0 +1,12 @@
+vim duplicateremover.desktop
+sudo cp duplicateremover.desktop /usr/share/applications/
+sudo chmod +x /usr/share/applications/duplicateremover.desktop
+ls
+vim duplicateremover.desktop
+sudo cp duplicateremover.desktop /usr/share/applications/
+sudo chmod +x /usr/share/applications/duplicateremover.desktop
+vim duplicateremover.desktop
+cd Desktop/
+cd github/
+ls
+
