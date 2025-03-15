@@ -5,6 +5,8 @@ import java.util.*;
 public class Delete_Duplicate {
     HashMap<String, String> hobj = new HashMap<>();
     LinkedList<String> lobj = new LinkedList<>();
+    // Map to store duplicates before deletion
+    HashMap<String, LinkedList<String>> duplicateMap = new HashMap<>();
     String str = null;
 
     public boolean add_chksum(String filepath) throws IOException, NoSuchAlgorithmException {
@@ -14,6 +16,11 @@ public class Delete_Duplicate {
             return true;
         } else {
             str = hobj.get(result);
+            // Store duplicate files instead of deleting immediately
+            if (!duplicateMap.containsKey(result)) {
+                duplicateMap.put(result, new LinkedList<>());
+            }
+            duplicateMap.get(result).add(filepath);
             return false;
         }
     }
@@ -35,7 +42,8 @@ public class Delete_Duplicate {
         return result.toString();
     }
 
-    public void list(String dname) throws Exception {
+    // Modified to find duplicates without deleting
+    public void findDuplicates(String dname) throws Exception {
         File folder = new File(dname);
         String filepath = folder.getAbsolutePath();
         if (!folder.exists()) {
@@ -48,14 +56,27 @@ public class Delete_Duplicate {
             File fd = new File(filepath + File.separator + fileName);
             if (fd.isDirectory()) {
                 System.out.println("FOLDER: " + fd.getName());
-                list(fd.getAbsolutePath());
+                findDuplicates(fd.getAbsolutePath());
             } else if (fd.isFile()) {
-                if (!add_chksum(fd.getAbsolutePath()) && fd.delete()) {
-                    System.out.println("File deleted: " + str + " => " + fd.getName());
-                    lobj.add(str + " => " + fd.getName());
-                }
+                add_chksum(fd.getAbsolutePath());
             }
         }
+    }
+    
+    // New method to delete confirmed duplicates
+    public void deleteDuplicates(List<String> filesToDelete) {
+        lobj.clear(); // Clear previous results
+        for (String filePath : filesToDelete) {
+            File file = new File(filePath);
+            if (file.exists() && file.delete()) {
+                lobj.add(file.getAbsolutePath());
+            }
+        }
+    }
+
+    // New method to get map of all duplicates
+    public HashMap<String, LinkedList<String>> getDuplicateMap() {
+        return duplicateMap;
     }
 
     public LinkedList<String> getLlist() {
@@ -64,7 +85,7 @@ public class Delete_Duplicate {
 
     public static void main(String[] args) throws Exception {
         Delete_Duplicate cobj = new Delete_Duplicate();
-        cobj.list("/home/admin/Dup_Del");  // Set your folder path here
+        cobj.findDuplicates("/home/admin/Dup_Del");  // Set your folder path here
     }
 }
 

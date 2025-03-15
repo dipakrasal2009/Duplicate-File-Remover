@@ -1,5 +1,9 @@
 import java.io.*;
 import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -331,57 +335,181 @@ public class front_end extends JFrame implements ActionListener {
             progressDialog.setLocationRelativeTo(this);
             
             // Use SwingWorker to run the process in background
-            SwingWorker<LinkedList<String>, Void> worker = new SwingWorker<LinkedList<String>, Void>() {
+            SwingWorker<HashMap<String, LinkedList<String>>, Void> worker = new SwingWorker<HashMap<String, LinkedList<String>>, Void>() {
                 @Override
-                protected LinkedList<String> doInBackground() throws Exception {
+                protected HashMap<String, LinkedList<String>> doInBackground() throws Exception {
                     try {
                         Delete_Duplicate dobj = new Delete_Duplicate();
-                        dobj.list(f.getAbsolutePath());
-                        return dobj.getLlist();
+                        dobj.findDuplicates(f.getAbsolutePath());
+                        return dobj.getDuplicateMap();
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        return new LinkedList<>();
+                        return new HashMap<>();
                     }
                 }
                 
                 @Override
                 protected void done() {
                     try {
-                        // Get the results from the background task
-                        LinkedList<String> ll = get();
-                        
-                        // Clear and update the model
-                        model.clear();
-                        
-                        if (ll.isEmpty()) {
-                            model.addElement("No duplicate files found!");
-                        } else {
-                            // Add a header line
-                            model.addElement("--- Deleted Duplicate Files ---");
-                            
-                            // Add each deleted file to the list
-                            for (String item : ll) {
-                                model.addElement(item);
-                            }
-                            
-                            // Add a summary line
-                            model.addElement("--- " + ll.size() + " duplicate files removed ---");
-                        }
-                        
-                        // Make sure the list scrolls to the top
-                        if (model.size() > 0) {
-                            l1.setSelectedIndex(0);
-                            l1.ensureIndexIsVisible(0);
-                        }
-                        
-                        // Close the progress dialog
+                        // Get the map of duplicates
+                        HashMap<String, LinkedList<String>> duplicateMap = get();
                         progressDialog.dispose();
                         
-                        // Show completion message
-                        JOptionPane.showMessageDialog(front_end.this, 
-                            "Scan completed successfully!\n" + 
-                            (ll.isEmpty() ? "No duplicate files found." : ll.size() + " duplicate files removed."), 
-                            "Complete", JOptionPane.INFORMATION_MESSAGE);
+                        if (duplicateMap.isEmpty()) {
+                            JOptionPane.showMessageDialog(front_end.this, 
+                                "No duplicate files found!", "Result", JOptionPane.INFORMATION_MESSAGE);
+                            
+                            // Clear and update the model
+                            model.clear();
+                            model.addElement("No duplicate files found!");
+                            return;
+                        }
+                        
+                        // Create list of all duplicates for selection
+                        ArrayList<String> allDuplicates = new ArrayList<>();
+                        
+                        // Clear and update the model to show found duplicates
+                        model.clear();
+                        model.addElement("--- Found Duplicate Files ---");
+                        
+                        for (Map.Entry<String, LinkedList<String>> entry : duplicateMap.entrySet()) {
+                            String originalFile = entry.getValue().getFirst();
+                            model.addElement("Original: " + originalFile);
+                            
+                            for (String duplicate : entry.getValue()) {
+                                model.addElement("  Duplicate: " + duplicate);
+                                allDuplicates.add(duplicate);
+                            }
+                            
+                            model.addElement(" ");
+                        }
+                        
+                        // Create and show the confirmation dialog
+                        JDialog confirmDialog = new JDialog(front_end.this, "Confirm Deletion", true);
+                        confirmDialog.setLayout(new BorderLayout());
+                        
+                        JPanel confirmPanel = new JPanel(new BorderLayout(10, 10));
+                        confirmPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+                        
+                        JLabel confirmLabel = new JLabel("<html>Found " + allDuplicates.size() + 
+                                                      " duplicate files. Do you want to delete them?</html>");
+                        confirmLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                        
+                        DefaultListModel<String> dupModel = new DefaultListModel<>();
+                        for (String file : allDuplicates) {
+                            dupModel.addElement(file);
+                        }
+                        
+                        JList<String> dupList = new JList<>(dupModel);
+                        dupList.setCellRenderer(new DefaultListCellRenderer() {
+                            @Override
+                            public Component getListCellRendererComponent(JList<?> list, Object value, 
+                                    int index, boolean isSelected, boolean cellHasFocus) {
+                                
+                                Component c = super.getListCellRendererComponent(
+                                        list, value, index, isSelected, cellHasFocus);
+                                
+                                setForeground(new Color(192, 0, 0));  // Dark red color
+                                
+                                return c;
+                            }
+                        });
+                        
+                        JScrollPane dupScrollPane = new JScrollPane(dupList);
+                        dupScrollPane.setPreferredSize(new Dimension(500, 300));
+                        
+                        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                        
+                        JButton cancelButton = new JButton("Cancel");
+                        cancelButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                        cancelButton.addActionListener(event -> confirmDialog.dispose());
+                        
+                        JButton deleteButton = new JButton("Delete All Duplicates");
+                        deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                        deleteButton.setBackground(new Color(220, 53, 69));
+                        deleteButton.setForeground(Color.WHITE);
+                        deleteButton.addActionListener(event -> {
+                            confirmDialog.dispose();
+                            
+                            // Show progress dialog for deletion
+                            JDialog deleteDialog = new JDialog(front_end.this, "Deleting Files", true);
+                            deleteDialog.setLayout(new BorderLayout());
+                            
+                            JPanel deletePanel = new JPanel(new BorderLayout(10, 10));
+                            deletePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+                            
+                            JLabel deleteLabel = new JLabel("Deleting duplicate files...");
+                            deleteLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                            
+                            JProgressBar deleteProgressBar = new JProgressBar();
+                            deleteProgressBar.setIndeterminate(true);
+                            
+                            deletePanel.add(deleteLabel, BorderLayout.NORTH);
+                            deletePanel.add(deleteProgressBar, BorderLayout.CENTER);
+                            
+                            deleteDialog.add(deletePanel);
+                            deleteDialog.setSize(300, 100);
+                            deleteDialog.setLocationRelativeTo(front_end.this);
+                            
+                            SwingWorker<LinkedList<String>, Void> deleteWorker = new SwingWorker<LinkedList<String>, Void>() {
+                                @Override
+                                protected LinkedList<String> doInBackground() throws Exception {
+                                    try {
+                                        Delete_Duplicate dobj = new Delete_Duplicate();
+                                        dobj.deleteDuplicates(allDuplicates);
+                                        return dobj.getLlist();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                        return new LinkedList<>();
+                                    }
+                                }
+                                
+                                @Override
+                                protected void done() {
+                                    try {
+                                        LinkedList<String> deletedFiles = get();
+                                        deleteDialog.dispose();
+                                        
+                                        // Update results in the main window
+                                        model.clear();
+                                        model.addElement("--- Deleted Duplicate Files ---");
+                                        
+                                        for (String deletedFile : deletedFiles) {
+                                            model.addElement(deletedFile);
+                                        }
+                                        
+                                        model.addElement("--- " + deletedFiles.size() + " duplicate files removed ---");
+                                        
+                                        // Show completion message
+                                        JOptionPane.showMessageDialog(front_end.this, 
+                                            "Successfully deleted " + deletedFiles.size() + " duplicate files.", 
+                                            "Complete", JOptionPane.INFORMATION_MESSAGE);
+                                        
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                        deleteDialog.dispose();
+                                        JOptionPane.showMessageDialog(front_end.this, 
+                                            "An error occurred during deletion: " + ex.getMessage(), 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                }
+                            };
+                            
+                            deleteWorker.execute();
+                            deleteDialog.setVisible(true);
+                        });
+                        
+                        buttonPanel.add(cancelButton);
+                        buttonPanel.add(deleteButton);
+                        
+                        confirmPanel.add(confirmLabel, BorderLayout.NORTH);
+                        confirmPanel.add(dupScrollPane, BorderLayout.CENTER);
+                        confirmPanel.add(buttonPanel, BorderLayout.SOUTH);
+                        
+                        confirmDialog.add(confirmPanel);
+                        confirmDialog.pack();
+                        confirmDialog.setLocationRelativeTo(front_end.this);
+                        confirmDialog.setVisible(true);
                         
                     } catch (Exception ex) {
                         ex.printStackTrace();
