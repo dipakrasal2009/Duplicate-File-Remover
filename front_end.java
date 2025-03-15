@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.*;
-
 public class front_end extends JFrame implements ActionListener {
     private DefaultListModel<String> model;
     private JList<String> l1;
@@ -25,6 +24,9 @@ public class front_end extends JFrame implements ActionListener {
     private SystemTray tray;
 
     front_end() {
+        // Initialize but don't show main frame yet
+        setVisible(false);
+        
         if (SystemTray.isSupported()) {
             try {
                 tray = SystemTray.getSystemTray();
@@ -51,24 +53,19 @@ public class front_end extends JFrame implements ActionListener {
                 
                 tray.add(trayIcon);
                 
-                // Start minimized
-                setVisible(false);
-                
             } catch (AWTException e) {
                 System.err.println("Tray icon could not be added: " + e.getMessage());
                 // If tray icon fails, show window normally
-                showSplashAndMain();
+                initializeComponents();
             }
         } else {
             System.err.println("System tray is not supported");
-            showSplashAndMain();
+            initializeComponents();
         }
-
-        initializeComponents();
     }
 
     private void initializeComponents() {
-        // Improved splash screen
+        // Improved splash screen with longer display time
         splash = new JFrame("Welcome!");
         splash.setUndecorated(true); // Remove window decorations for a cleaner look
         splash.setBackground(new Color(0, 0, 0, 0)); // Transparent background
@@ -106,18 +103,27 @@ public class front_end extends JFrame implements ActionListener {
         
         splash.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         splash.setResizable(false);
-        splash.setVisible(true);
         
         // Center splash screen
         splash.setLocationRelativeTo(null);
+        splash.setVisible(true);
         
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        splash.setVisible(false);
-        splash.dispose();
+        // Move the sleep to a separate thread to avoid freezing the UI
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000); // Increase splash screen time to 5 seconds
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    splash.setVisible(false);
+                    splash.dispose();
+                    
+                    // Now make the main UI visible
+                    setVisible(true);
+                });
+            }
+        }).start();
 
         // Improved menu bar
         menubar = new JMenuBar();
@@ -579,7 +585,6 @@ public class front_end extends JFrame implements ActionListener {
 
     private void showSplashAndMain() {
         setVisible(true);
-        initializeComponents();
     }
 
     public static void main(String args[]) {
