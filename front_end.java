@@ -342,25 +342,34 @@ public class front_end extends JFrame implements ActionListener {
             progressDialog.setLocationRelativeTo(this);
             
             // Use SwingWorker to run the process in background
-            SwingWorker<HashMap<String, LinkedList<String>>, Void> worker = new SwingWorker<HashMap<String, LinkedList<String>>, Void>() {
+            SwingWorker<Delete_Duplicate, Void> worker = new SwingWorker<Delete_Duplicate, Void>() {
                 @Override
-                protected HashMap<String, LinkedList<String>> doInBackground() throws Exception {
+                protected Delete_Duplicate doInBackground() throws Exception {
                     try {
                         Delete_Duplicate dobj = new Delete_Duplicate();
-                        dobj.findDuplicates(f.getAbsolutePath());
-                        return dobj.getDuplicateMap();
+                        dobj.list(f.getAbsolutePath());
+                        return dobj;
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        return new HashMap<>();
+                        return null;
                     }
                 }
                 
                 @Override
                 protected void done() {
                     try {
-                        // Get the map of duplicates
-                        HashMap<String, LinkedList<String>> duplicateMap = get();
+                        // Get the duplicate detector object
+                        Delete_Duplicate dobj = get();
                         progressDialog.dispose();
+                        
+                        if (dobj == null) {
+                            JOptionPane.showMessageDialog(front_end.this, 
+                                "An error occurred during scanning.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        
+                        // Get the duplicate file map
+                        HashMap<String, LinkedList<String>> duplicateMap = dobj.getDuplicateMap();
                         
                         if (duplicateMap.isEmpty()) {
                             JOptionPane.showMessageDialog(front_end.this, 
@@ -372,9 +381,6 @@ public class front_end extends JFrame implements ActionListener {
                             return;
                         }
                         
-                        // Create the duplicate file remover object to access original files
-                        Delete_Duplicate dobj = new Delete_Duplicate();
-                        
                         // Get only the duplicate files (not originals)
                         ArrayList<String> allDuplicates = dobj.getDuplicatesList();
                         
@@ -383,19 +389,25 @@ public class front_end extends JFrame implements ActionListener {
                         model.addElement("--- Found Duplicate Files ---");
                         
                         for (Map.Entry<String, LinkedList<String>> entry : duplicateMap.entrySet()) {
-                            // Find the original file for this checksum
-                            String originalFile = "";
-                            for (String value : dobj.getOriginalsList()) {
-                                if (dobj.checksum(value).equals(entry.getKey())) {
-                                    originalFile = value;
-                                    break;
-                                }
+                            String checksum = entry.getKey();
+                            String originalFile = dobj.getOriginalFile(checksum);
+                            
+                            File originalFileObj = new File(originalFile);
+                            boolean originalHasCopy = originalFileObj.getName().toLowerCase().contains("copy");
+                            
+                            if (originalHasCopy) {
+                                model.addElement("Original: " + originalFile + " (KEPT - First encountered)");
+                            } else {
+                                model.addElement("Original: " + originalFile + " (KEPT - No 'copy' in name)");
                             }
                             
-                            model.addElement("Original: " + originalFile + " (KEPT)");
-                            
                             for (String duplicate : entry.getValue()) {
-                                model.addElement("  Duplicate: " + duplicate + " (TO BE DELETED)");
+                                File duplicateFile = new File(duplicate);
+                                if (duplicateFile.getName().toLowerCase().contains("copy")) {
+                                    model.addElement("  Duplicate: " + duplicate + " (TO BE DELETED - Contains 'copy')");
+                                } else {
+                                    model.addElement("  Duplicate: " + duplicate + " (TO BE DELETED)");
+                                }
                             }
                             
                             model.addElement(" ");
@@ -472,7 +484,6 @@ public class front_end extends JFrame implements ActionListener {
                                 @Override
                                 protected LinkedList<String> doInBackground() throws Exception {
                                     try {
-                                        Delete_Duplicate dobj = new Delete_Duplicate();
                                         dobj.deleteDuplicates(allDuplicates);
                                         return dobj.getLlist();
                                     } catch (Exception ex) {

@@ -5,96 +5,141 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Delete_Duplicate {
-    HashMap<String, String> hobj = new HashMap<>();
-    LinkedList<String> lobj = new LinkedList<>();
-    // Map to store duplicates before deletion
-    HashMap<String, LinkedList<String>> duplicateMap = new HashMap<>();
+    // Map to store file checksum -> original file path
+    private HashMap<String, String> originalFiles = new HashMap<>();
+    
+    // Map to store checksum -> list of duplicate files
+    private HashMap<String, LinkedList<String>> duplicateMap = new HashMap<>();
+    
+    // List to store deleted file paths
+    private LinkedList<String> deletedFiles = new LinkedList<>();
+    
     // To store deletion records with timestamps
-    List<Map<String, String>> deletionRecords = new ArrayList<>();
-    String str = null;
+    private List<Map<String, String>> deletionRecords = new ArrayList<>();
 
-    public boolean add_chksum(String filepath) throws IOException, NoSuchAlgorithmException {
-        String result = checksum(filepath);
-        if (!hobj.containsKey(result)) {
-            // This is the first occurrence (original file) - keep it
-            hobj.put(result, filepath);
-            return true;
-        } else {
-            // This is a duplicate - store it in the duplicateMap
-            str = hobj.get(result);
-            if (!duplicateMap.containsKey(result)) {
-                duplicateMap.put(result, new LinkedList<>());
-            }
-            duplicateMap.get(result).add(filepath);
-            return false;
-        }
-    }
-
-    public String checksum(String filepath) throws IOException, NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        try (InputStream fis = new FileInputStream(filepath)) {
-            byte[] buffer = new byte[1024];
-            int nread;
-            while ((nread = fis.read(buffer)) != -1) {
-                md.update(buffer, 0, nread);
-            }
-        }
-
-        StringBuilder result = new StringBuilder();
-        for (byte b : md.digest()) {
-            result.append(String.format("%02x", b));
-        }
-        return result.toString();
-    }
-
-    // Modified to find duplicates without deleting
-    public void findDuplicates(String dname) throws Exception {
+    // Find and track duplicates without deleting
+    public void list(String path) throws Exception {
         // Clear previous data
-        hobj.clear();
+        originalFiles.clear();
         duplicateMap.clear();
+        deletedFiles.clear();
         
-        File folder = new File(dname);
-        String filepath = folder.getAbsolutePath();
-        if (!folder.exists()) {
-            System.out.println("Folder does not exist!");
+        // First pass: collect all files with their checksums
+        Map<String, List<String>> allFilesByChecksum = new HashMap<>();
+        collectFiles(new File(path), allFilesByChecksum);
+        
+        // Second pass: determine which files to keep vs delete
+        processFilesForDeletion(allFilesByChecksum);
+    }
+    
+    // Collect all files and group them by checksum
+    private void collectFiles(File directory, Map<String, List<String>> allFilesByChecksum) throws Exception {
+        if (!directory.exists() || !directory.isDirectory()) {
             return;
         }
-
-        String[] arr = folder.list();
-        for (String fileName : arr) {
-            File fd = new File(filepath + File.separator + fileName);
-            if (fd.isDirectory()) {
-                System.out.println("FOLDER: " + fd.getName());
-                findDuplicates(fd.getAbsolutePath());
-            } else if (fd.isFile()) {
-                add_chksum(fd.getAbsolutePath());
+        
+        File[] files = directory.listFiles();
+        if (files == null) return;
+        
+        for (File file : files) {
+            if (file.isDirectory()) {
+                collectFiles(file, allFilesByChecksum);
+            } else if (file.isFile()) {
+                String filePath = file.getAbsolutePath();
+                String fileChecksum = calculateChecksum(file);
+                
+                if (!allFilesByChecksum.containsKey(fileChecksum)) {
+                    allFilesByChecksum.put(fileChecksum, new ArrayList<>());
+                }
+                allFilesByChecksum.get(fileChecksum).add(filePath);
             }
         }
     }
     
-    // New method to get list of only duplicate files (NOT the originals)
+    // Determine which files to keep vs which to delete
+    private void processFilesForDeletion(Map<String, List<String>> allFilesByChecksum) {
+        for (Map.Entry<String, List<String>> entry : allFilesByChecksum.entrySet()) {
+            String checksum = entry.getKey();
+            List<String> files = entry.getValue();
+            
+            if (files.size() <= 1) {
+                // No duplicates for this file
+                originalFiles.put(checksum, files.get(0));
+                continue;
+            }
+            
+            // Find the best file to keep (preferably one without "copy" in name)
+            String fileToKeep = selectFileToKeep(files);
+            originalFiles.put(checksum, fileToKeep);
+            
+            // Add all other files as duplicates
+            duplicateMap.put(checksum, new LinkedList<>());
+            for (String filePath : files) {
+                if (!filePath.equals(fileToKeep)) {
+                    duplicateMap.get(checksum).add(filePath);
+                }
+            }
+        }
+    }
+    
+    // Select which file to keep - prefer files without "copy" in name
+    private String selectFileToKeep(List<String> files) {
+        // First, try to find a file without "copy" in the name (case insensitive)
+        for (String filePath : files) {
+            File file = new File(filePath);
+            String fileName = file.getName().toLowerCase();
+            
+            if (!fileName.contains("copy")) {
+                return filePath;
+            }
+        }
+        
+        // If all files have "copy" in the name, keep the first one
+        return files.get(0);
+    }
+    
+    // Calculate file checksum
+    private String calculateChecksum(File file) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                md.update(buffer, 0, bytesRead);
+            }
+        }
+        
+        byte[] digest = md.digest();
+        StringBuilder sb = new StringBuilder();
+        for (byte b : digest) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+    
+    // Get list of all duplicate files only
     public ArrayList<String> getDuplicatesList() {
         ArrayList<String> allDuplicates = new ArrayList<>();
-        for (Map.Entry<String, LinkedList<String>> entry : duplicateMap.entrySet()) {
-            // Add only the duplicates, not the original files
-            allDuplicates.addAll(entry.getValue());
+        for (LinkedList<String> duplicates : duplicateMap.values()) {
+            allDuplicates.addAll(duplicates);
         }
         return allDuplicates;
     }
     
-    // New method to get original files (kept files)
-    public ArrayList<String> getOriginalsList() {
-        ArrayList<String> originals = new ArrayList<>();
-        for (String original : hobj.values()) {
-            originals.add(original);
-        }
-        return originals;
+    // Get original file for a specific checksum
+    public String getOriginalFile(String checksum) {
+        return originalFiles.get(checksum);
     }
     
-    // Modified to delete only confirmed duplicates
+    // Get map of all original files
+    public HashMap<String, String> getOriginalFiles() {
+        return originalFiles;
+    }
+    
+    // Delete specific duplicate files
     public void deleteDuplicates(List<String> filesToDelete) {
-        lobj.clear(); // Clear previous results
-        deletionRecords.clear(); // Clear previous records
+        deletedFiles.clear();
+        deletionRecords.clear();
         
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timestamp = dateFormat.format(new Date());
@@ -102,7 +147,7 @@ public class Delete_Duplicate {
         for (String filePath : filesToDelete) {
             File file = new File(filePath);
             if (file.exists() && file.delete()) {
-                lobj.add(file.getAbsolutePath());
+                deletedFiles.add(filePath);
                 
                 // Create record for this deleted file
                 Map<String, String> record = new HashMap<>();
@@ -117,7 +162,7 @@ public class Delete_Duplicate {
         saveToJson();
     }
     
-    // New method to save deletion records to JSON
+    // Save deletion records to JSON
     private void saveToJson() {
         if (deletionRecords.isEmpty()) {
             return;
@@ -207,19 +252,20 @@ public class Delete_Duplicate {
             System.err.println("Error saving deletion history: " + e.getMessage());
         }
     }
-
-    // Get the map of all duplicates (for display)
+    
+    // Get map of all duplicates found
     public HashMap<String, LinkedList<String>> getDuplicateMap() {
         return duplicateMap;
     }
-
+    
+    // Get list of deleted files
     public LinkedList<String> getLlist() {
-        return lobj;
+        return deletedFiles;
     }
 
     public static void main(String[] args) throws Exception {
         Delete_Duplicate cobj = new Delete_Duplicate();
-        cobj.findDuplicates("/home/admin/Dup_Del");  // Set your folder path here
+        cobj.list("/home/admin/Dup_Del");  // Set your folder path here
     }
 }
 

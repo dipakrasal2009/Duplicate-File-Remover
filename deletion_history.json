@@ -113,12 +113,105 @@
   },
   {
     "path": "/home/hppc/Dipak/b",
-    "name": "b",
-    "deleted_at": "2025-03-22 08:56:34"
+    "name": "b"
   },
   {
     "path": "/home/hppc/Dipak/2.png",
-    "name": "2.png",
-    "deleted_at": "2025-03-22 08:56:34"
+    "name": "2.png"
+  },
+  {
+    "path": "/home/hppc/Dipak/b",
+    "name": "b"
+  },
+  {
+    "path": "/home/hppc/Dipak/2.png",
+    "name": "2.png"
+  },
+  {
+    "path": "/home/hppc/Dipak/l",
+    "name": "l"
+  },
+  {
+    "path": "/home/hppc/Desktop/github/Duplicate-File-Remover/Screenshots/2.png",
+    "name": "2.png"
+  },
+  {
+    "path": "/home/hppc/Desktop/github/Duplicate-File-Remover/Screenshots/7 (copy).png",
+    "name": "7 (copy).png"
+  },
+  {
+    "path": "/home/hppc/Desktop/github/Duplicate-File-Remover/Screenshots/1 (copy).png",
+    "name": "1 (copy).png"
+  },
+  {
+    "path": "/home/hppc/Desktop/github/Duplicate-File-Remover/Screenshots/3.png",
+    "name": "3.png"
+  },
+  {
+    "path": "/home/hppc/Desktop/github/Duplicate-File-Remover/Screenshots/5.png",
+    "name": "5.png"
+  },
+  {
+    "path": "/home/hppc/Desktop/github/Duplicate-File-Remover/Screenshots/6 (copy).png",
+    "name": "6 (copy).png"
+  },
+  {
+    "path": "/home/hppc/Desktop/github/Duplicate-File-Remover/Screenshots/4 (copy).png",
+    "name": "4 (copy).png"
+  },
+  {
+    "path": "/home/hppc/Dipak/sachin/d (copy)",
+    "name": "d (copy)"
+  },
+  {
+    "path": "/home/hppc/Dipak/sachin/d",
+    "name": "d"
+  },
+  {
+    "path": "/home/hppc/Dipak/d (copy)",
+    "name": "d (copy)"
+  },
+  {
+    "path": "/home/hppc/Dipak/k (copy)",
+    "name": "k (copy)"
+  },
+  {
+    "path": "/home/hppc/Dipak/j (copy)",
+    "name": "j (copy)"
+  },
+  {
+    "path": "/home/hppc/Dipak/7 (copy).png",
+    "name": "7 (copy).png",
+    "deleted_at": "2025-03-22 10:15:00"
+  },
+  {
+    "path": "/home/hppc/Dipak/d (copy)",
+    "name": "d (copy)",
+    "deleted_at": "2025-03-22 10:15:00"
+  },
+  {
+    "path": "/home/hppc/Dipak/1 (copy).png",
+    "name": "1 (copy).png",
+    "deleted_at": "2025-03-22 10:15:00"
+  },
+  {
+    "path": "/home/hppc/Dipak/k (copy)",
+    "name": "k (copy)",
+    "deleted_at": "2025-03-22 10:15:00"
+  },
+  {
+    "path": "/home/hppc/Dipak/6 (copy).png",
+    "name": "6 (copy).png",
+    "deleted_at": "2025-03-22 10:15:00"
+  },
+  {
+    "path": "/home/hppc/Dipak/j (copy)",
+    "name": "j (copy)",
+    "deleted_at": "2025-03-22 10:15:00"
+  },
+  {
+    "path": "/home/hppc/Dipak/4 (copy).png",
+    "name": "4 (copy).png",
+    "deleted_at": "2025-03-22 10:15:00"
   }
 ]
