@@ -16,11 +16,12 @@ public class Delete_Duplicate {
     public boolean add_chksum(String filepath) throws IOException, NoSuchAlgorithmException {
         String result = checksum(filepath);
         if (!hobj.containsKey(result)) {
+            // This is the first occurrence (original file) - keep it
             hobj.put(result, filepath);
             return true;
         } else {
+            // This is a duplicate - store it in the duplicateMap
             str = hobj.get(result);
-            // Store duplicate files instead of deleting immediately
             if (!duplicateMap.containsKey(result)) {
                 duplicateMap.put(result, new LinkedList<>());
             }
@@ -48,6 +49,10 @@ public class Delete_Duplicate {
 
     // Modified to find duplicates without deleting
     public void findDuplicates(String dname) throws Exception {
+        // Clear previous data
+        hobj.clear();
+        duplicateMap.clear();
+        
         File folder = new File(dname);
         String filepath = folder.getAbsolutePath();
         if (!folder.exists()) {
@@ -67,7 +72,26 @@ public class Delete_Duplicate {
         }
     }
     
-    // Modified deleteDuplicates to record timestamps
+    // New method to get list of only duplicate files (NOT the originals)
+    public ArrayList<String> getDuplicatesList() {
+        ArrayList<String> allDuplicates = new ArrayList<>();
+        for (Map.Entry<String, LinkedList<String>> entry : duplicateMap.entrySet()) {
+            // Add only the duplicates, not the original files
+            allDuplicates.addAll(entry.getValue());
+        }
+        return allDuplicates;
+    }
+    
+    // New method to get original files (kept files)
+    public ArrayList<String> getOriginalsList() {
+        ArrayList<String> originals = new ArrayList<>();
+        for (String original : hobj.values()) {
+            originals.add(original);
+        }
+        return originals;
+    }
+    
+    // Modified to delete only confirmed duplicates
     public void deleteDuplicates(List<String> filesToDelete) {
         lobj.clear(); // Clear previous results
         deletionRecords.clear(); // Clear previous records
@@ -184,7 +208,7 @@ public class Delete_Duplicate {
         }
     }
 
-    // New method to get map of all duplicates
+    // Get the map of all duplicates (for display)
     public HashMap<String, LinkedList<String>> getDuplicateMap() {
         return duplicateMap;
     }

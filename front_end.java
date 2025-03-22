@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.*;
+
 public class front_end extends JFrame implements ActionListener {
     private DefaultListModel<String> model;
     private JList<String> l1;
@@ -371,20 +372,30 @@ public class front_end extends JFrame implements ActionListener {
                             return;
                         }
                         
-                        // Create list of all duplicates for selection
-                        ArrayList<String> allDuplicates = new ArrayList<>();
+                        // Create the duplicate file remover object to access original files
+                        Delete_Duplicate dobj = new Delete_Duplicate();
+                        
+                        // Get only the duplicate files (not originals)
+                        ArrayList<String> allDuplicates = dobj.getDuplicatesList();
                         
                         // Clear and update the model to show found duplicates
                         model.clear();
                         model.addElement("--- Found Duplicate Files ---");
                         
                         for (Map.Entry<String, LinkedList<String>> entry : duplicateMap.entrySet()) {
-                            String originalFile = entry.getValue().getFirst();
-                            model.addElement("Original: " + originalFile);
+                            // Find the original file for this checksum
+                            String originalFile = "";
+                            for (String value : dobj.getOriginalsList()) {
+                                if (dobj.checksum(value).equals(entry.getKey())) {
+                                    originalFile = value;
+                                    break;
+                                }
+                            }
+                            
+                            model.addElement("Original: " + originalFile + " (KEPT)");
                             
                             for (String duplicate : entry.getValue()) {
-                                model.addElement("  Duplicate: " + duplicate);
-                                allDuplicates.add(duplicate);
+                                model.addElement("  Duplicate: " + duplicate + " (TO BE DELETED)");
                             }
                             
                             model.addElement(" ");

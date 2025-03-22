@@ -13,17 +13,112 @@
   },
   {
     "path": "/home/hppc/Dipak/s",
-    "name": "s",
-    "deleted_at": "2025-03-15 22:24:08"
+    "name": "s"
   },
   {
     "path": "/home/hppc/Dipak/c",
-    "name": "c",
-    "deleted_at": "2025-03-15 22:24:08"
+    "name": "c"
   },
   {
     "path": "/home/hppc/Dipak/q",
-    "name": "q",
-    "deleted_at": "2025-03-15 22:24:08"
+    "name": "q"
+  },
+  {
+    "path": "/home/hppc/Dipak/l",
+    "name": "l"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/app/app.config.ts",
+    "name": "app.config.ts"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/.editorconfig",
+    "name": ".editorconfig"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/.vscode/extensions.json",
+    "name": "extensions.json"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/tsconfig.spec.json",
+    "name": "tsconfig.spec.json"
+  },
+  {
+    "path": "/home/hppc/Dipak/l",
+    "name": "l"
+  },
+  {
+    "path": "/home/hppc/Dipak/appaa/src/app/app.component.css",
+    "name": "app.component.css"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/assets/.gitkeep",
+    "name": ".gitkeep"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/app/app.component.css",
+    "name": "app.component.css"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/main.ts",
+    "name": "main.ts"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/.vscode/launch.json",
+    "name": "launch.json"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/favicon.ico",
+    "name": "favicon.ico"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/.gitignore",
+    "name": ".gitignore"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/tsconfig.app.json",
+    "name": "tsconfig.app.json"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/app/app.config.server.ts",
+    "name": "app.config.server.ts"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/main.server.ts",
+    "name": "main.server.ts"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/server.ts",
+    "name": "server.ts"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/.vscode/tasks.json",
+    "name": "tasks.json"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/tsconfig.json",
+    "name": "tsconfig.json"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/styles.css",
+    "name": "styles.css"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/app/app.component.html",
+    "name": "app.component.html"
+  },
+  {
+    "path": "/home/hppc/Dipak/Appa/src/app/app.routes.ts",
+    "name": "app.routes.ts"
+  },
+  {
+    "path": "/home/hppc/Dipak/b",
+    "name": "b",
+    "deleted_at": "2025-03-22 08:56:34"
+  },
+  {
+    "path": "/home/hppc/Dipak/2.png",
+    "name": "2.png",
+    "deleted_at": "2025-03-22 08:56:34"
   }
 ]
