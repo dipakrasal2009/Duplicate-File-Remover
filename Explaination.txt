@@ -1,0 +1,104 @@
+Duplicate File Remover - Project Details
+Project Topic
+The Duplicate File Remover is a desktop utility application designed to help users identify and remove duplicate files from their file system. This tool addresses the common problem of wasted disk space due to file duplication and provides a safe, user-friendly interface for managing these duplicates.
+Dependencies
+The project is built with pure Java and its standard libraries, making it highly portable with minimal external dependencies:
+Java Development Kit (JDK) - Version 8 or higher required
+Java Runtime Environment (JRE) - For running the compiled application
+Packages and Their Uses
+Java Standard Packages:
+1. java.io:
+Used for file operations (reading, writing, deletion)
+Classes used: File, FileInputStream, FileWriter
+Purpose: Core file system interaction
+java.security:
+Used for MD5 checksum calculation
+Classes used: MessageDigest
+Purpose: Creating unique file fingerprints to identify duplicates
+java.util:
+Used for data structures and collections
+Classes used: HashMap, LinkedList, ArrayList, Map, List
+Purpose: Storing file information and managing duplicates
+java.nio.file:
+Used for enhanced file operations
+Classes used: Files, Paths
+Purpose: Advanced file manipulation and reading
+java.text:
+Used for date formatting
+Classes used: SimpleDateFormat
+Purpose: Formatting timestamps for deletion records
+javax.swing:
+Used for building the graphical user interface
+Classes used: JFrame, JPanel, JButton, JList, JOptionPane, etc.
+Purpose: Creating the user interface components
+java.awt:
+Used for advanced UI capabilities and system tray
+Classes used: Color, Font, BorderLayout, SystemTray, etc.
+Purpose: Enhancing UI appearance and system integration
+java.awt.event:
+Used for event handling
+Classes used: ActionListener, ActionEvent
+Purpose: Responding to user interactions
+javax.swing.border:
+Used for creating borders around UI components
+Classes used: BorderFactory
+Purpose: Improving visual appearance
+Frontend and Backend Connection
+The project follows a simple MVC (Model-View-Controller) architecture:
+Frontend (front_end.java):
+Serves as both View and Controller
+Contains the GUI components (JFrame, buttons, lists, etc.)
+Handles user interactions and events
+Calls methods from the backend to process data
+Backend (Delete_Duplicate.java):
+Serves as the Model
+Contains the core logic for duplicate detection and file operations
+Manages data structures for tracking files
+Handles file system operations (scanning, deletion)
+Maintains deletion history
+How They Connect:
+Object Instantiation:
+The frontend creates instances of the backend class when needed.
+Method Calls:
+The frontend calls backend methods to perform operations.
+Data Exchange:
+Backend returns data structures (HashMap, LinkedList) with file information
+Frontend displays this information and lets users make decisions
+Asynchronous Processing:
+Long operations run in the background to keep the UI responsive.
+Brief Architecture Explanation
+User Interface Layer (front_end.java):
+Splash screen for initial loading
+Main application window with file browser
+Results display area
+Confirmation dialogs
+Progress indicators
+System tray integration
+Business Logic Layer (Delete_Duplicate.java):
+File scanning algorithm
+Checksum generation
+Duplicate identification logic
+Original vs. duplicate file selection
+File deletion operations
+Deletion history management
+Data Flow:
+a. User selects a directory to scan
+b. Backend traverses directory structure and calculates checksums
+c. Files with identical checksums are grouped
+d. Original files are identified (preferring files without "copy" in name)
+e. Frontend displays results to user
+f. User confirms deletion
+g. Backend deletes selected files
+h. Deletion records are saved to JSON
+i. Results are displayed to user
+Algorithm Highlights:
+Two-pass scanning for better original file identification
+MD5 checksum for content-based duplicate detection
+Intelligent file preservation based on filename patterns
+Safe deletion with confirmation and history tracking
+Safety Features:
+Preview of files before deletion
+Explicit confirmation required
+JSON history maintained for tracking deletions
+Clear visual indicators of which files will be kept vs. deleted
+
