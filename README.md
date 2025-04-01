@@ -1,6 +1,6 @@
 # Duplicate File Remover
 
-![Duplicate File Remover](https://via.placeholder.com/800x400?text=Duplicate+File+Remover)
+![Duplicate File Remover](https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/1.png)
 
 A robust Java application designed to identify and remove duplicate files from your file system. This tool helps you reclaim valuable disk space while maintaining data integrity and providing a comprehensive deletion history.
 
@@ -17,11 +17,16 @@ A robust Java application designed to identify and remove duplicate files from y
 ## Screenshots
 
 <div align="center">
-  <img src="https://via.placeholder.com/400x250?text=Main+Screen" alt="Main Screen" style="margin-right: 10px;">
-  <img src="https://via.placeholder.com/400x250?text=Confirmation+Dialog" alt="Confirmation Dialog">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/1.png" alt="Main Screen" style="margin-right: 10px;">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/2%20(copy).png" alt="Confirmation Dialog">
   <br><br>
-  <img src="https://via.placeholder.com/400x250?text=Results+View" alt="Results View" style="margin-right: 10px;">
-  <img src="https://via.placeholder.com/400x250?text=System+Tray" alt="System Tray">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/3%20(copy).png" alt="Results View" style="margin-right: 10px;">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/4.png" alt="System Tray">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/5%20(copy).png" alt="Results View" style="margin-right: 10px;">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/6.png" alt="Results View" style="margin-right: 10px;">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/7.png" alt="Results View" style="margin-right: 10px;">
+  <img src="https://github.com/dipakrasal2009/Duplicate-File-Remover/blob/main/Screenshots/8.png" alt="Results View" style="margin-right: 10px;">
+
 </div>
 
 ## Installation
@@ -31,7 +36,7 @@ A robust Java application designed to identify and remove duplicate files from y
 - At least 50MB of free disk space
 
 ### Download
-1. Download the latest JAR file from the [Releases](https://github.com/yourusername/duplicate-file-remover/releases) page
+1. Download the latest JAR file from the [Releases](https://github.com/dipakrasal2009/Duplicate-File-Remover/releases) page
 2. Place the JAR file in a convenient location on your system
 
 ### Running the Application
@@ -100,18 +105,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to all contributors who have helped improve this project
-- Special thanks to the Java community for providing excellent documentation and support
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by Your Name</p>
+  <p>Made with ❤️ by Dipak, Pratik, Sohail</p>
 </div>
 
