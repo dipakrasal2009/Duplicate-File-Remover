@@ -648,13 +648,7 @@ public class front_end extends JFrame implements ActionListener {
         Button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         Button.setPreferredSize(new Dimension(200, 40));
         
-        
-	//Button.addActionListener(e -> {
-          //  JOptionPane.showMessageDialog(this, 
-            //    "Viewing deletion history feature is being implemented.", 
-              //  "History", JOptionPane.INFORMATION_MESSAGE);
-        //});
-        
+    
         
         historyPanel.add(Button);
         
