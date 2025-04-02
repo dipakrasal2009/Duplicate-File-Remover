@@ -169,7 +169,7 @@ public class Delete_Duplicate {
         }
         
         try {
-            String jsonFilePath = "deletion_history.json";
+            String jsonFilePath = "deletion_history1.json";
             File jsonFile = new File(jsonFilePath);
             
             // Read existing data if file exists

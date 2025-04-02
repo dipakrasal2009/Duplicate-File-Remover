@@ -8,13 +8,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.*;
+import java.nio.file.Files;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class front_end extends JFrame implements ActionListener {
     private DefaultListModel<String> model;
     private JList<String> l1;
     private JPanel panNorth, panCenter1, panCenter2, panCenter;
     private JLabel name, welcome;
-    private JButton b1, b2;
+    private JButton b1, b2, b3, historyButton;
     private JTextField jtext;
     private File f;
     private JMenuBar menubar;
@@ -63,6 +66,8 @@ public class front_end extends JFrame implements ActionListener {
             System.err.println("System tray is not supported");
             initializeComponents();
         }
+
+        addHistoryButton();
     }
 
     private void initializeComponents() {
@@ -209,6 +214,16 @@ public class front_end extends JFrame implements ActionListener {
         b2.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
         b2.setAlignmentX(Component.LEFT_ALIGNMENT);
         b2.setMaximumSize(new Dimension(2000, 45));
+
+	b3 = new JButton("BUTTON");
+        b3.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        b3.setBackground(new Color(70, 130, 180));
+        b3.setForeground(Color.WHITE);
+        b3.setFocusPainted(false);
+        b3.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        b3.setAlignmentX(Component.LEFT_ALIGNMENT);
+        b3.setMaximumSize(new Dimension(2000, 45));
+
         
         // Add some space between components
         panCenter1.add(folderLabel);
@@ -602,11 +617,54 @@ public class front_end extends JFrame implements ActionListener {
             aboutDialog.setSize(400, 300);
             aboutDialog.setLocationRelativeTo(this);
             aboutDialog.setVisible(true);
+        } else if (e.getSource() == historyButton) {
+            showDeletionHistory();
         }
     }
 
     private void showSplashAndMain() {
         setVisible(true);
+    }
+
+    private void showDeletionHistory() {
+        JOptionPane.showMessageDialog(this, 
+            "Deletion history will be displayed here.\nFeature coming soon!", 
+            "View Deletion History", 
+            JOptionPane.INFORMATION_MESSAGE);
+        
+        // Implement the full history viewing functionality later
+    }
+
+    private void addHistoryButton() {
+        // Create a new panel for the history button
+        JPanel historyPanel = new JPanel();
+        historyPanel.setBackground(new Color(240, 240, 240));
+        
+        // Create the history button
+        JButton historyButton = new JButton("button");
+        historyButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        historyButton.setBackground(new Color(46, 139, 87)); // Green color
+        historyButton.setForeground(Color.WHITE);
+        historyButton.setFocusPainted(false);
+        historyButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        historyButton.setPreferredSize(new Dimension(200, 40));
+        
+        // Add action listener
+        historyButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, 
+                "Viewing deletion history feature is being implemented.", 
+                "History", JOptionPane.INFORMATION_MESSAGE);
+        });
+        
+        // Add the button to the panel
+        historyPanel.add(historyButton);
+        
+        // Add the panel to the bottom of the frame
+        getContentPane().add(historyPanel, BorderLayout.SOUTH);
+        
+        // Force layout update
+        revalidate();
+        repaint();
     }
 
     public static void main(String args[]) {
